@@ -1,3 +1,6 @@
+# Wires the network and compute modules together: compute consumes
+# the subnet and security group that network creates.
+
 module "network" {
   source = "./modules/network"
 
