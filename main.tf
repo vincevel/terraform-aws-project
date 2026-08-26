@@ -9,9 +9,9 @@ module "network" {
 module "compute" {
   source = "./modules/compute"
 
-  subnet_id          = module.network.subnet_id
-  security_group_id  = module.network.security_group_id
-  instance_type      = var.instance_type
-  public_key_path    = var.public_key_path
-  environment        = var.environment
+  subnet_id         = module.network.subnet_id
+  security_group_id = module.network.security_group_id
+  instance_type     = var.instance_type
+  public_key_path   = var.public_key_path
+  environment       = var.environment
 }
