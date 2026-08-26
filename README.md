@@ -16,23 +16,22 @@ A from-scratch AWS infrastructure project built with Terraform to develop genuin
 
 ## Project structure
 
-.
-├── backend.tf              # S3 remote state + DynamoDB locking config
-├── provider.tf              # AWS provider + version constraint
-├── variables.tf              # Root-level input variables
-├── main.tf                  # Wires the network and compute modules together
-├── outputs.tf                # Exposes instance ID and public IP
-├── terraform.tfvars          # Local-only values (gitignored — contains a real IP)
-├── environments/
-│   ├── dev.tfvars            # t3.micro, environment = "dev"
-│   └── prod.tfvars           # t3.small, environment = "prod"
-├── modules/
-│   ├── network/               # VPC, subnet, IGW, route table, security group
-│   └── compute/                # AMI lookup, key pair, EC2 instance
-├── ci/
-│   └── placeholder-key.pub     # Fake public key, used only by CI (see below)
-└── .github/workflows/
-    └── terraform.yml           # fmt / validate / plan on every PR and push to main
+- `backend.tf` — S3 remote state + DynamoDB locking config
+- `provider.tf` — AWS provider + version constraint
+- `variables.tf` — Root-level input variables
+- `main.tf` — Wires the network and compute modules together
+- `outputs.tf` — Exposes instance ID and public IP
+- `terraform.tfvars` — Local-only values (gitignored — contains a real IP)
+- `environments/`
+  - `dev.tfvars` — t3.micro, environment = "dev"
+  - `prod.tfvars` — t3.small, environment = "prod"
+- `modules/`
+  - `network/` — VPC, subnet, IGW, route table, security group
+  - `compute/` — AMI lookup, key pair, EC2 instance
+- `ci/`
+  - `placeholder-key.pub` — Fake public key, used only by CI (see below)
+- `.github/workflows/`
+  - `terraform.yml` — fmt / validate / plan on every PR and push to main
 
 ## Remote state & locking
 
@@ -68,22 +67,29 @@ This project wasn't a clean, scripted run — genuine problems came up and were 
 
 ## Getting started
 
-```bash
-# Configure a dedicated AWS CLI profile scoped to a least-privilege IAM user
-aws configure --profile terraform-project
+Configure a dedicated AWS CLI profile scoped to a least-privilege IAM user:
 
-# Initialize (pulls remote state from S3)
-terraform init
+    aws configure --profile terraform-project
 
-# Plan against an environment
-terraform plan -var-file=environments/dev.tfvars
+Initialize (pulls remote state from S3):
 
-# Apply (manual, reviewed — never automated)
-terraform apply -var-file=environments/dev.tfvars
+    terraform init
 
-# Tear down when done — mandatory, not optional, since this provisions real billable AWS resources
-terraform destroy -var-file=environments/dev.tfvars
+Plan against an environment:
 
-Cost discipline
+    terraform plan -var-file=environments/dev.tfvars
 
-This project provisions real AWS resources that cost money while running (a t3.micro/t3.small instance, at fractions of a cent per minute). terraform destroy is treated as a mandatory step at the end of every working session, not optional cleanup — nothing is left running between sessions. The S3 state bucket and DynamoDB lock table are the one deliberate exception: they're meant to persist, and their idle cost is negligible (a few KB of storage, pay-per-request billing with zero requests when idle).
+Apply (manual, reviewed — never automated):
+
+    terraform apply -var-file=environments/dev.tfvars
+
+Tear down when done — mandatory, not optional, since this provisions real billable AWS resources:
+
+    terraform destroy -var-file=environments/dev.tfvars
+
+## Cost discipline
+
+- This project provisions real AWS resources that cost money while running — a `t3.micro`/`t3.small` instance, at fractions of a cent per minute.
+- `terraform destroy` is treated as a mandatory step at the end of every working session, not optional cleanup — nothing is left running between sessions.
+- The S3 state bucket and DynamoDB lock table are the one deliberate exception: they're meant to persist between sessions.
+- Their idle cost is negligible — a few KB of storage, pay-per-request billing with zero requests when idle.
