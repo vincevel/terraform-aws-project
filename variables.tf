@@ -19,3 +19,9 @@ variable "environment" {
   description = "Deployment environment (dev or prod)"
   type        = string
 }
+
+variable "public_key_path" {
+  description = "Path to the local SSH public key file"
+  type        = string
+  default     = "~/.ssh/terraform-project-key.pub"
+}
