@@ -10,6 +10,8 @@ variable "instance_type" {
   default     = "t3.micro"
 }
 
+# Deliberately no default — forces every plan/apply to supply a real value,
+# so a forgotten default can never leave SSH open to 0.0.0.0/0 by accident.
 variable "allowed_ssh_cidr" {
   description = "CIDR block allowed to SSH into the instance (your own IP, not 0.0.0.0/0)"
   type        = string
